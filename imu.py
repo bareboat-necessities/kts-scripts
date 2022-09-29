@@ -153,7 +153,7 @@ while True:
 
                 # health monitor
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(str(hack), (MON_IP, MON_PORT))
+                sock.sendto(str(hack).encode(), (MON_IP, MON_PORT))
 
                 # iihdm magnetic heading
                 hdm = "IIHDM," + str(round(yaw))[:-2] + ",M"

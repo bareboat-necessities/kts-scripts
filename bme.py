@@ -167,7 +167,7 @@ while True:
     hack = time.time()
     if hack - mon > .5:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(str(hack), (MON_IP, MON_PORT))
+        sock.sendto(str(hack).encode(), (MON_IP, MON_PORT))
         mon = hack
 
     if hack - t_print > 10:
