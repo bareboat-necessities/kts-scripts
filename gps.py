@@ -5,6 +5,7 @@ import operator
 import time
 import socket
 import os
+from functools import reduce
 
 GPS_IP = "127.0.0.1"
 GPS_PORT = 5005

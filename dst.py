@@ -5,6 +5,7 @@ import time
 import socket
 import os.path
 import os
+from functools import reduce
 
 DST_IP = "127.0.0.3"
 DST_PORT = 5005

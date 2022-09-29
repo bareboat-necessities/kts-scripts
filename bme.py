@@ -4,6 +4,7 @@ import smbus
 import time
 import socket
 import operator
+from functools import reduce
 
 bus_number = 1
 i2c_address = 0x77

@@ -8,6 +8,7 @@ import math
 import operator
 import socket
 import os
+from functools import reduce
 
 IMU_IP = "127.0.0.2"
 IMU_PORT = 5005
