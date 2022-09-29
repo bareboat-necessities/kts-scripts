@@ -38,7 +38,7 @@ if (not imu.IMUInit()):
     imu_sentence = "$IIXDR,IMU_FAILED_TO_INITIALIZE*7C"
     if (hack - t_print) > 1.0:
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(imu_sentence, (IMU_IP, IMU_PORT))
+        sock.sendto(imu_sentence.encode(), (IMU_IP, IMU_PORT))
         t_print = hack
         t_shutdown += 1
         if t_shutdown > 9:
@@ -98,7 +98,7 @@ while True:
                 cs = "0" + cs
             imu_sentence = "$" + imu_sentence + "*" + cs
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            sock.sendto(imu_sentence, (IMU_IP, IMU_PORT))
+            sock.sendto(imu_sentence.encode(), (IMU_IP, IMU_PORT))
             t_fail = hack
             t_shutdown += 1
 
@@ -194,7 +194,7 @@ while True:
 
                 # To kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(imu_sentence, (IMU_IP, IMU_PORT))
+                sock.sendto(imu_sentence.encode(), (IMU_IP, IMU_PORT))
 
                 t_print = hack
 

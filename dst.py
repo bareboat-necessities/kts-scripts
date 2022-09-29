@@ -110,7 +110,7 @@ while True:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(sddpt, (DST_IP, DST_PORT))
+                sock.sendto(sddpt.encode(), (DST_IP, DST_PORT))
 
             # mean water temp sentence
             elif title == "YXMTW":
@@ -123,7 +123,7 @@ while True:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(dst_raw, (DST_IP, DST_PORT))
+                sock.sendto(dst_raw.encode(), (DST_IP, DST_PORT))
 
             # vessel waterspeed sentence and current set and drift
             elif title == "VWVHW":
@@ -199,7 +199,7 @@ while True:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(vwvhw, (DST_IP, DST_PORT))
+                sock.sendto(vwvhw.encode(), (DST_IP, DST_PORT))
 
                 # VDR set and drift
                 if time.time() - imu_hack < 3.0 and time.time() - gps_hack < 3.0 and valid == "A":
@@ -253,7 +253,7 @@ while True:
 
                     # to kplex
                     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    sock.sendto(iivdr, (DST_IP, DST_PORT))
+                    sock.sendto(iivdr.encode(), (DST_IP, DST_PORT))
 
             # voyage log sentence
             elif title == "VWVLW":
@@ -271,11 +271,11 @@ while True:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(vwvlw, (DST_IP, DST_PORT))
+                sock.sendto(vwvlw.encode(), (DST_IP, DST_PORT))
 
             # if it's any other valid NMEA sentence
             else:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(dst_raw, (DST_IP, DST_PORT))
+                sock.sendto(dst_raw.encode(), (DST_IP, DST_PORT))

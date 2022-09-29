@@ -116,10 +116,10 @@ while True:
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(gprmc + gpvtg + gpzda, (GPS_IP, GPS_PORT))
+                sock.sendto((gprmc + gpvtg + gpzda).encode(), (GPS_IP, GPS_PORT))
 
             # else print the sentence
             else:
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                sock.sendto(gps_raw, (GPS_IP, GPS_PORT))
+                sock.sendto(gps_raw.encode(), (GPS_IP, GPS_PORT))

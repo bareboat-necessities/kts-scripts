@@ -227,6 +227,6 @@ while True:
 
         # to kplex
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(atm_sentence, (BME_IP, BME_PORT))
+        sock.sendto(atm_sentence.encode(), (BME_IP, BME_PORT))
 
         t_print = hack
