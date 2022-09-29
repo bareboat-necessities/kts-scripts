@@ -9,7 +9,7 @@ import socket
 import select
 
 # change the working directory to the scripts folder
-os.chdir("home/pi/kts/scripts")
+os.chdir("home/user/kts/scripts")
 
 # log and begin instrument scripts
 log = open('log', 'w')
@@ -66,7 +66,7 @@ while True:
 
     # monitor gps.py
     gpsready = select.select([gpssock], [], [], .1)
-    if gpsready [0]:
+    if gpsready[0]:
         data, addr = gpssock.recvfrom(1024)
         gps_hack = float(data)
     if time.time() - gps_hack > 10.0:
@@ -75,11 +75,11 @@ while True:
         log.close()
         os.system("pkill -9 -f gps.py")
         os.system("python gps.py &")
-        gps_hack = time.time()        
+        gps_hack = time.time()
 
-    # monitor imu.py
+        # monitor imu.py
     imuready = select.select([imusock], [], [], .1)
-    if imuready [0]:
+    if imuready[0]:
         data, addr = imusock.recvfrom(1024)
         imu_hack = float(data)
     if time.time() - imu_hack > 10.0:
@@ -92,7 +92,7 @@ while True:
 
     # monitor dst.py
     dstready = select.select([dstsock], [], [], .1)
-    if dstready [0]:
+    if dstready[0]:
         data, addr = dstsock.recvfrom(1024)
         dst_hack = float(data)
     if time.time() - dst_hack > 10.0:
@@ -105,7 +105,7 @@ while True:
 
     # monitor bme.py
     bmeready = select.select([bmesock], [], [], .1)
-    if bmeready [0]:
+    if bmeready[0]:
         data, addr = bmesock.recvfrom(1024)
         bme_hack = float(data)
     if time.time() - bme_hack > 60:

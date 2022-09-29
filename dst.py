@@ -55,13 +55,13 @@ while True:
         f.write("Last 60 Seconds DST Raw Input:\r\n")
         f.close()
         log = hack
-    
+
     # checking to see if it's a valid NMEA sentence
     if "*" in dst_raw:
         dst_split = dst_raw.split('*')
         dst_sentence = dst_split[0].strip('$')
         cs0 = dst_split[1][:-2]
-        cs = format(reduce(operator.xor,map(ord,dst_sentence),0),'X')
+        cs = format(reduce(operator.xor, map(ord, dst_sentence), 0), 'X')
         if len(cs) == 1:
             cs = "0" + cs
 
@@ -82,7 +82,7 @@ while True:
                     imu_hack = float(imu_split[0])
                     roll = float(imu_split[2])
                     pitch = float(imu_split[3])
-                    
+
                 except ValueError:
                     time.sleep(.03)
                     f = open('imu_bus', 'r')
@@ -95,13 +95,14 @@ while True:
 
                 # correct depth for 23 degree offset from centerline, but if roll/pitch
                 # are from the last 3 seconds, correct depth for attitude
-                depth = round(float(dst_vars[1])*math.cos(math.radians(23)),1)
+                depth = round(float(dst_vars[1]) * math.cos(math.radians(23)), 1)
                 if time.time() - imu_hack < 3.0:
-                   depth = round(float(dst_vars[1])*math.cos(math.radians(23-roll))*math.cos(math.radians(pitch)),1)
+                    depth = round(
+                        float(dst_vars[1]) * math.cos(math.radians(23 - roll)) * math.cos(math.radians(pitch)), 1)
 
                 # assemble the sentence with .5 meter offset from waterline
                 dpt = "SDDPT," + str(depth) + ",0.50"
-                dptcs = format(reduce(operator.xor,map(ord,dpt),0),'X')
+                dptcs = format(reduce(operator.xor, map(ord, dpt), 0), 'X')
                 if len(dptcs) == 1:
                     dptcs = "0" + dptcs
                 sddpt = "$" + dpt + "*" + dptcs + "\r\n"
@@ -115,9 +116,9 @@ while True:
 
                 # write to bus
                 mtw = dst_vars[1]
-		f = open('dst_bus', 'w')
-		f.write(mtw)
-		f.close()
+                f = open('dst_bus', 'w')
+                f.write(mtw)
+                f.close()
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -144,9 +145,9 @@ while True:
                     imu_split = line.split(',')
                     imu_hack = float(imu_split[0])
                     heading = float(imu_split[1])
-                    roll = float(imu_split[2])                
+                    roll = float(imu_split[2])
 
-                # course and groundspeed from gps
+                    # course and groundspeed from gps
                 try:
                     f = open('gps_bus', 'r')
                     line = f.readline()
@@ -171,7 +172,7 @@ while True:
                 waterspeed = float(dst_vars[5])
                 sensor_angle = 23.0
                 if time.time() - imu_hack < 3.0:
-                    sensor_angle = math.fabs(23.0-roll)
+                    sensor_angle = math.fabs(23.0 - roll)
                 five_knot_correction = -.02 * sensor_angle
                 ten_knot_correction = sensor_angle * (.035 - .0065 * sensor_angle) - 2
                 if sensor_angle > 10.0:
@@ -179,15 +180,18 @@ while True:
                 if waterspeed < 5.0:
                     waterspeed = round(waterspeed + (five_knot_correction * waterspeed / 5), 1)
                 else:
-                    waterspeed = round((waterspeed + (waterspeed * (ten_knot_correction * (waterspeed - 5) - 2 * five_knot_correction * (waterspeed - 10))) / 50),1)
+                    waterspeed = round((waterspeed + (waterspeed * (
+                                ten_knot_correction * (waterspeed - 5) - 2 * five_knot_correction * (
+                                    waterspeed - 10))) / 50), 1)
 
                 # assemble the sentence
                 vhw = "VWVHW,"
                 if time.time() - imu_hack < 3.0:
                     vhw = vhw + str(int(heading))
-                else: vhw = vhw + ''
+                else:
+                    vhw = vhw + ''
                 vhw = vhw + ",T,,M," + str(waterspeed) + ",N,,K"
-                vhwcs = format(reduce(operator.xor,map(ord,vhw),0),'X')
+                vhwcs = format(reduce(operator.xor, map(ord, vhw), 0), 'X')
                 if len(vhwcs) == 1:
                     vhwcs = "0" + vhwcs
                 vwvhw = "$" + vhw + "*" + vhwcs + "\r\n"
@@ -198,20 +202,22 @@ while True:
 
                 # VDR set and drift
                 if time.time() - imu_hack < 3.0 and time.time() - gps_hack < 3.0 and valid == "A":
-                    
+
                     heading_radians = math.radians(heading)
                     course_radians = math.radians(course)
                     set0 = course_radians - heading_radians
                     if set0 < 0:
                         set0 = set0 + 2 * math.pi
-                    set_relative = math.pi - math.atan2(groundspeed * math.sin(set0), waterspeed - groundspeed * math.cos(set0))
+                    set_relative = math.pi - math.atan2(groundspeed * math.sin(set0),
+                                                        waterspeed - groundspeed * math.cos(set0))
                     if waterspeed == 0 and groundspeed == 0:
                         set_relative = set0
                     set_radians = heading_radians + set_relative
                     if set_radians > (2 * math.pi):
                         set_radians = set_radians - (2 * math.pi)
-                    drift = math.sqrt(pow(waterspeed,2) + pow(groundspeed,2) - 2 * waterspeed * groundspeed * math.cos(set0))
-                    
+                    drift = math.sqrt(
+                        pow(waterspeed, 2) + pow(groundspeed, 2) - 2 * waterspeed * groundspeed * math.cos(set0))
+
                     # dampen out set and drift over the last five readings
                     setx_total = setx_total - setx_run[five]
                     setx_run[five] = math.cos(set_radians)
@@ -236,10 +242,10 @@ while True:
                     five = five + 1
                     if five > 4:
                         five = 0
-                    
+
                     # assemble the sentence
-                    vdr = "IIVDR," + str(int(set_true)) + ",T,,M," + str(round(drift,1)) + ",N"
-                    vdrcs = format(reduce(operator.xor,map(ord,vdr),0),'X')
+                    vdr = "IIVDR," + str(int(set_true)) + ",T,,M," + str(round(drift, 1)) + ",N"
+                    vdrcs = format(reduce(operator.xor, map(ord, vdr), 0), 'X')
                     if len(vdrcs) == 1:
                         vdrcs = "0" + vdrcs
                     iivdr = "$" + vdr + "*" + vdrcs + "\r\n"
@@ -257,16 +263,16 @@ while True:
                     vlwfirst = 0
                 trip = float(dst_vars[1]) - float(vlwinit)
                 vlw = "VWVLW," + dst_vars[1] + ",N," + str(trip) + ",N"
-                cs = format(reduce(operator.xor,map(ord,vlw),0),'X')
+                cs = format(reduce(operator.xor, map(ord, vlw), 0), 'X')
                 if len(cs) == 1:
                     cs = "0" + cs
-                vwvlw = "$" + vlw + "*" + cs  + "\r\n"
+                vwvlw = "$" + vlw + "*" + cs + "\r\n"
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sock.sendto(vwvlw, (DST_IP, DST_PORT))
-	  
-	    # if it's any other valid NMEA sentence
+
+            # if it's any other valid NMEA sentence
             else:
 
                 # to kplex

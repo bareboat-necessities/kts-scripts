@@ -48,7 +48,7 @@ while True:
         gps_split = gps_raw.split('*')
         gps_sentence = gps_split[0].strip('$')
         cs0 = gps_split[1][:-2]
-        cs1 = format(reduce(operator.xor,map(ord,gps_sentence),0),'X')
+        cs1 = format(reduce(operator.xor, map(ord, gps_sentence), 0), 'X')
         if len(cs1) == 1:
             cs1 = "0" + cs1
 
@@ -59,7 +59,7 @@ while True:
 
             # recommended minimum navigation sentence
             if title == "GPRMC" and gps_vars[2] == "A":
-	    
+
                 # heading from IMU
                 try:
                     f = open('imu_bus', 'r')
@@ -67,7 +67,7 @@ while True:
                     f.close()
                     imu_split = line.split(',')
                     imu_hack = float(imu_split[0])
-                    heading = float(imu_split[1])    
+                    heading = float(imu_split[1])
                 except ValueError:
                     f.close()
                     time.sleep(.03)
@@ -87,35 +87,38 @@ while True:
                     course = heading
 
                 # assemble the sentence with corrected course
-                rmc = "GPRMC," + gps_vars[1] + ',' + gps_vars[2] + ',' + gps_vars[3] + ',' + gps_vars[4] + ',' + gps_vars[5] + ',' + gps_vars[6] + ',' + str(groundspeed) + ',' + str(int(round(course))) + ',' + gps_vars[9] + ',,'
-                rmccs = format(reduce(operator.xor,map(ord,rmc),0),'X')
+                rmc = "GPRMC," + gps_vars[1] + ',' + gps_vars[2] + ',' + gps_vars[3] + ',' + gps_vars[4] + ',' + \
+                      gps_vars[5] + ',' + gps_vars[6] + ',' + str(groundspeed) + ',' + str(int(round(course))) + ',' + \
+                      gps_vars[9] + ',,'
+                rmccs = format(reduce(operator.xor, map(ord, rmc), 0), 'X')
                 if len(rmccs) == 1:
-                        rmccs = "0" + rmccs
+                    rmccs = "0" + rmccs
                 gprmc = "$" + rmc + "*" + rmccs + "\r\n"
 
-		vtg = "GPVTG," + str(course) + ",T,,M," + str(groundspeed) + ",N,,K,D"
-		vtgcs = format(reduce(operator.xor,map(ord,vtg),0),'X')
+                vtg = "GPVTG," + str(course) + ",T,,M," + str(groundspeed) + ",N,,K,D"
+                vtgcs = format(reduce(operator.xor, map(ord, vtg), 0), 'X')
                 if len(vtgcs) == 1:
-                        vtgcs = "0" + vtgcs
+                    vtgcs = "0" + vtgcs
                 gpvtg = "$" + vtg + "*" + vtgcs + "\r\n"
 
-		zda = "GPZDA," + gps_vars[1] + "," + gps_vars[9][:2] + "," + gps_vars[9][2:4] + ",20" + gps_vars[9][4:] + ",,"
-		zdacs = format(reduce(operator.xor,map(ord,zda),0),'X')
+                zda = "GPZDA," + gps_vars[1] + "," + gps_vars[9][:2] + "," + gps_vars[9][2:4] + ",20" + gps_vars[9][
+                                                                                                        4:] + ",,"
+                zdacs = format(reduce(operator.xor, map(ord, zda), 0), 'X')
                 if len(zdacs) == 1:
-                        zdacs = "0" + zdacs
+                    zdacs = "0" + zdacs
                 gpzda = "$" + zda + "*" + zdacs + "\r\n"
 
                 # to gps bus
                 f = open('gps_bus', 'w')
-                f.write(str(time.time()) + ',' + valid + ',' + str(course)  + ',' + str(groundspeed))
+                f.write(str(time.time()) + ',' + valid + ',' + str(course) + ',' + str(groundspeed))
                 f.close()
 
                 # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sock.sendto(gprmc + gpvtg + gpzda, (GPS_IP, GPS_PORT))
 
-	    # else print the sentence
-	    else:
-		# to kplex
+            # else print the sentence
+            else:
+                # to kplex
                 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                 sock.sendto(gps_raw, (GPS_IP, GPS_PORT))
